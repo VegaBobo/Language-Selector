@@ -59,6 +59,10 @@ kapt {
     correctErrorTypes = true
 }
 
+aboutLibraries {
+    excludeFields = arrayOf("generated")
+}
+
 dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
