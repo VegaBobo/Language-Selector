@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.com.google.dagger.hilt)
+    alias(libs.plugins.com.mikepenz.aboutlibraries)
     kotlin("kapt")
-    id("com.google.dagger.hilt.android")
-    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
