@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Language Selector</string>
+    <string name="app_language">Idioma do app</string>
+    <string name="system_default">Padrão do sistema</string>
+    <string name="user_languages">Idiomas do usuário:</string>
+    <string name="pinned">Fixado:</string>
+    <string name="region">Região:</string>
+    <string name="all_languages">Todos os idiomas:</string>
+    <string name="show_only_user_apps">Mostrar apenas apps do usuário</string>
+    <string name="show_system_apps">Mostrar apps do sistema</string>
+    <string name="settings">Config.</string>
+    <string name="open">Abrir</string>
+    <string name="close">Fechar</string>
+    <string name="permissions_required">Permissões necessárias</string>
+    <string name="shizuku_required">É necessário o Shizuku, por favor instale e inicie o Shizuku, depois que as permissões do Shizuku forem concecidas ao app, será possível continuar.</string>
+    <string name="proceed">Continuar</string>
+    <string name="pinned_ok">%1$s fixado</string>
+    <string name="unpinned">%1$s desafixado</string>
+    <string name="about">Sobre</string>
+    <string name="deps_libs">Dependências e bibliotecas</string>
+    <string name="version">versão %1$s (%2$s)</string>
+    <string name="app">Aplicativo</string>
+    <string name="ghrepo">GitHub repo.</string>
+    <string name="view_source">Ver código fonte</string>
+</resources>
