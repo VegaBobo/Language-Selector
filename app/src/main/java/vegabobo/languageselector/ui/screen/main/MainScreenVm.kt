@@ -49,7 +49,9 @@ class MainScreenVm @Inject constructor(
         return app.packageManager.getInstalledApplications(
             PackageManager.ApplicationInfoFlags.of(0)
         ).mapNotNull {
-            if (getAlsoSystemApps)
+            if (!it.enabled)
+                null
+            else if (getAlsoSystemApps)
                 it
             else
                 if (it.flags and ApplicationInfo.FLAG_SYSTEM == 0)
