@@ -107,8 +107,9 @@ class AppInfoVm @Inject constructor(
 
     fun onClickResetLang() {
         UserServiceProvider.run {
-            setApplicationLocales(appInfo.packageName, LocaleList(Locale.ROOT))
+            setApplicationLocales(appInfo.packageName, LocaleList())
             updateCurrentLanguageState()
+            _uiState.update { it.copy(currentLanguage = "")}
         }
     }
 
