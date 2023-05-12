@@ -39,11 +39,6 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
             bindShizuku()
     }
 
-    override fun onDestroy() {
-        Shizuku.removeRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
-        super.onDestroy()
-    }
-
     private fun checkPermission(code: Int): Boolean {
         return if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
             bindShizuku()
@@ -68,6 +63,24 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
             Shizuku.addRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
             checkPermission(acRequestCode)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (
+            Shizuku.pingBinder() &&
+            Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED &&
+            !UserServiceProvider.isConnected()
+        ) {
+            bindShizuku()
+        }
+    }
+
+    override fun onDestroy() {
+        Shizuku.removeRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
+        if (UserServiceProvider.isConnected())
+            Shizuku.unbindUserService(userServiceArgs, UserServiceProvider.connection, true)
+        super.onDestroy()
     }
 
 }
