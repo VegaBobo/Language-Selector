@@ -3,6 +3,9 @@ package vegabobo.languageselector.ui.screen.main
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Handler
+import android.os.Looper
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MainScreenVm @Inject constructor(
@@ -81,12 +85,23 @@ class MainScreenVm @Inject constructor(
     fun toggleSearch() {
         val newSearchVisibility = !uiState.value.isSearchVisible
         if (!newSearchVisibility)
-            _uiState.update { it.copy(searchQuery = "") }
+            _uiState.update { it.copy(searchTextFieldValue = "") }
         _uiState.update { it.copy(isSearchVisible = newSearchVisibility) }
     }
 
+
+    val searchQuery = mutableStateOf("")
+    private val handler = Handler(Looper.getMainLooper())
+    private var workRunnable: Runnable? = null
+
     fun onSearchTextFieldChange(newText: String) {
-        _uiState.update { it.copy(searchQuery = newText) }
+        _uiState.update { it.copy(searchTextFieldValue = newText) }
+
+        if(workRunnable != null)
+            handler.removeCallbacks(workRunnable!!)
+
+        workRunnable = Runnable { searchQuery.value = newText }
+        handler.postDelayed(workRunnable!!, 500)
     }
 
 }

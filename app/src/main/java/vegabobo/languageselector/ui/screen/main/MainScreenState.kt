@@ -6,11 +6,11 @@ import android.graphics.drawable.Drawable
 import androidx.compose.runtime.mutableStateListOf
 
 data class MainScreenState(
+    val searchTextFieldValue: String = "",
     val isLoading: Boolean = true,
     val isDropdownVisible: Boolean = false,
     val isShowingSystemApps: Boolean = false,
     val isShizukuAvail: Boolean = false,
-    val searchQuery: String = "",
     val isSearchVisible: Boolean = false,
     val isAboutDialogVisible: Boolean = false,
     val listOfApps: MutableList<ApplicationInfo> = mutableStateListOf()

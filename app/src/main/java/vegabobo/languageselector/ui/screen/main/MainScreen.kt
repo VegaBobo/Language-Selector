@@ -33,7 +33,7 @@ fun MainScreen(
                 isOnSearchMode = uiState.isSearchVisible,
                 isDropdownVisible = uiState.isDropdownVisible,
                 isShowingSystemApps = uiState.isShowingSystemApps,
-                searchQuery = uiState.searchQuery,
+                searchQuery = uiState.searchTextFieldValue,
                 onClickToggleSearch = { mainScreenVm.toggleSearch() },
                 onClickToggleDropdown = { mainScreenVm.toggleDropdown() },
                 onSearchTextChange = { mainScreenVm.onSearchTextFieldChange(it) },
@@ -58,9 +58,9 @@ fun MainScreen(
                 val packageName = thisPackage.packageName
                 val appIconDrawable = pm.getAppIcon(thisPackage)
                 val containsInSearchQuery =
-                    packageName.lowercase().contains(uiState.searchQuery.lowercase()) ||
-                            appName.lowercase().contains(uiState.searchQuery.lowercase())
-                if (uiState.searchQuery == "" || containsInSearchQuery)
+                    packageName.lowercase().contains(mainScreenVm.searchQuery.value.lowercase()) ||
+                            appName.lowercase().contains(mainScreenVm.searchQuery.value.lowercase())
+                if (uiState.searchTextFieldValue == "" || containsInSearchQuery)
                     AppListItem(
                         packageName = packageName,
                         appName = appName,
