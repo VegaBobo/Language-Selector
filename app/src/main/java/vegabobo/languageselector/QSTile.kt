@@ -54,6 +54,11 @@ class QSTile : TileService() {
                     currentAppPackage,
                     PackageManager.ApplicationInfoFlags.of(0)
                 )
+            if ((targetPackage.flags and ApplicationInfo.FLAG_SYSTEM) != 0) {
+                // Prevent system apps to have their language override from QS
+                setDisabledTile()
+                return@run
+            }
             var isCustomLocale = false
             val currentLocale =
                 try {
