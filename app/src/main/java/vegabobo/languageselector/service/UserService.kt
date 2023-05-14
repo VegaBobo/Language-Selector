@@ -7,7 +7,9 @@ import android.app.ILocaleManager
 import android.os.Build
 import android.os.LocaleList
 import android.os.Process
+import android.util.Log
 import rikka.shizuku.SystemServiceHelper
+import vegabobo.languageselector.BuildConfig
 import vegabobo.languageselector.IUserService
 import kotlin.system.exitProcess
 
@@ -77,7 +79,15 @@ class UserService : IUserService.Stub() {
     override fun getFirstRunningTaskPackage(): String {
         requiresActivityTaskManager()
         val runningTask =
-            ACTIVITY_TASK_MANAGER!!.getTasks(1, false, false, -1).first()
+            try {
+                ACTIVITY_TASK_MANAGER!!.getTasks(1, false, false, -1).first()
+            } catch (e: NoSuchMethodError) {
+                Log.w(
+                    BuildConfig.APPLICATION_ID,
+                    "getTasks failed, trying again without displayId, error: ${e.stackTraceToString()}"
+                )
+                ACTIVITY_TASK_MANAGER!!.getTasks(1, false, false).first()
+            }
         return runningTask.topActivity?.packageName ?: ""
     }
 }
