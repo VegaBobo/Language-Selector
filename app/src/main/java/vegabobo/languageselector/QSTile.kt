@@ -39,13 +39,6 @@ class QSTile : TileService() {
         return locales.first()
     }
 
-    private fun setUpdatingTile() {
-        qsTile.label = getString(R.string.app_name)
-        qsTile.subtitle = getString(R.string.loading)
-        qsTile.state = Tile.STATE_UNAVAILABLE
-        qsTile.updateTile()
-    }
-
     private fun setDisabledTile() {
         qsTile.label = getString(R.string.app_name)
         qsTile.subtitle = getString(R.string.unavailable)
@@ -144,8 +137,6 @@ class QSTile : TileService() {
 
         if (!this::targetPackage.isInitialized)
             return
-
-        setUpdatingTile()
 
         UserServiceProvider.run {
             val currentLocale = getApplicationLocales(targetPackage.packageName)
