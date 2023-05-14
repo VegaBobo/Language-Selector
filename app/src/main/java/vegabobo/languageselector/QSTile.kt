@@ -106,7 +106,8 @@ class QSTile : TileService() {
         setDisabledTile()
 
         try {
-            Shizuku.bindUserService(ShizukuArgs.userServiceArgs, UserServiceProvider.connection)
+            if (!UserServiceProvider.isConnected())
+                Shizuku.bindUserService(ShizukuArgs.userServiceArgs, UserServiceProvider.connection)
         } catch (e: Exception) {
             Log.e(
                 BuildConfig.APPLICATION_ID,
