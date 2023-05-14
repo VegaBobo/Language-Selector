@@ -2,6 +2,7 @@ package vegabobo.languageselector.service
 
 import android.app.ActivityManager
 import android.app.IActivityManager
+import android.app.IActivityTaskManager
 import android.app.ILocaleManager
 import android.os.Build
 import android.os.LocaleList
@@ -9,6 +10,7 @@ import android.os.Process
 import rikka.shizuku.SystemServiceHelper
 import vegabobo.languageselector.IUserService
 import kotlin.system.exitProcess
+
 
 class UserService : IUserService.Stub() {
 
@@ -63,5 +65,19 @@ class UserService : IUserService.Stub() {
         requiresActivityManager()
         val currentUser = ActivityManager.getCurrentUser()
         ACTIVITY_MANAGER!!.forceStopPackage(packageName, currentUser)
+    }
+
+    var ACTIVITY_TASK_MANAGER: IActivityTaskManager? = null
+    fun requiresActivityTaskManager() {
+        if (ACTIVITY_TASK_MANAGER != null) return
+        val am = SystemServiceHelper.getSystemService("activity_task")
+        ACTIVITY_TASK_MANAGER = IActivityTaskManager.Stub.asInterface(am)
+    }
+
+    override fun getFirstRunningTaskPackage(): String {
+        requiresActivityTaskManager()
+        val runningTask =
+            ACTIVITY_TASK_MANAGER!!.getTasks(1, false, false, -1).first()
+        return runningTask.topActivity?.packageName ?: ""
     }
 }

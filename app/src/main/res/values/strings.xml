@@ -22,4 +22,6 @@
     <string name="app">Application</string>
     <string name="ghrepo">GitHub repo</string>
     <string name="view_source">View source code</string>
+    <string name="loading">Loading…</string>
+    <string name="unavailable">Unavailable</string>
 </resources>

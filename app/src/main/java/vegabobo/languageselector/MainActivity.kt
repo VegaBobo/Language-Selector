@@ -13,10 +13,7 @@ import vegabobo.languageselector.ui.theme.LanguageSelector
 import dagger.hilt.android.AndroidEntryPoint
 import rikka.shizuku.Shizuku
 
-
-@AndroidEntryPoint
-class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListener {
-
+object ShizukuArgs {
     val userServiceArgs =
         Shizuku.UserServiceArgs(
             ComponentName(BuildConfig.APPLICATION_ID, UserService::class.java.name),
@@ -25,11 +22,15 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
             .processNameSuffix("service")
             .debuggable(BuildConfig.DEBUG)
             .version(BuildConfig.VERSION_CODE)
+}
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListener {
 
     val acRequestCode = 1
 
     fun bindShizuku() {
-        Shizuku.bindUserService(userServiceArgs, UserServiceProvider.connection)
+        Shizuku.bindUserService(ShizukuArgs.userServiceArgs, UserServiceProvider.connection)
     }
 
     private val REQUEST_PERMISSION_RESULT_LISTENER = this::onRequestPermissionResult
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
     override fun onDestroy() {
         Shizuku.removeRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
         if (UserServiceProvider.isConnected())
-            Shizuku.unbindUserService(userServiceArgs, UserServiceProvider.connection, true)
+            Shizuku.unbindUserService(ShizukuArgs.userServiceArgs, UserServiceProvider.connection, true)
         super.onDestroy()
     }
 

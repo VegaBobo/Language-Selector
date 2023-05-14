@@ -109,7 +109,7 @@ class AppInfoVm @Inject constructor(
         UserServiceProvider.run {
             setApplicationLocales(appInfo.packageName, LocaleList())
             updateCurrentLanguageState()
-            _uiState.update { it.copy(currentLanguage = "")}
+            _uiState.update { it.copy(currentLanguage = "") }
         }
     }
 
@@ -146,17 +146,7 @@ class AppInfoVm @Inject constructor(
     fun updatePinnedLangsFromSP() {
         val sp = getSp()
         val set = sp.getStringSet(PrefConstants.PINNED_LOCALES, emptySet()) ?: return
-        val pinnedLocaleList = set.mapNotNull {
-            try {
-                val stringLocale = it.split(",")
-                val name = stringLocale[0]
-                val tag = stringLocale[1]
-                SingleLocale(name, tag)
-            } catch (e: Exception) {
-                Log.e(BuildConfig.APPLICATION_ID, e.stackTraceToString())
-                null
-            }
-        }.toMutableList()
+        val pinnedLocaleList = set.parseSetLangs()
         _uiState.update { it.copy(listOfPinnedLanguages = pinnedLocaleList) }
     }
 
@@ -164,4 +154,18 @@ class AppInfoVm @Inject constructor(
 
 fun Locale.capDisplayName(): String {
     return this.getDisplayName(this).replaceFirstChar { it.uppercaseChar() }
+}
+
+fun Set<String>.parseSetLangs(): MutableList<SingleLocale> {
+    return this.mapNotNull {
+        try {
+            val stringLocale = it.split(",")
+            val name = stringLocale[0]
+            val tag = stringLocale[1]
+            SingleLocale(name, tag)
+        } catch (e: Exception) {
+            Log.e(BuildConfig.APPLICATION_ID, e.stackTraceToString())
+            null
+        }
+    }.toMutableList()
 }

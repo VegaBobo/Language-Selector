@@ -12,4 +12,7 @@ interface IUserService {
 
     // IActivityManager
     void forceStopPackage(String packageName) = 3000;
+
+    // IActivityTaskManager
+    String getFirstRunningTaskPackage() = 4000;
 }
