@@ -103,6 +103,7 @@ fun SearchBar(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .weight(1f),
+            maxLines = 1,
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
