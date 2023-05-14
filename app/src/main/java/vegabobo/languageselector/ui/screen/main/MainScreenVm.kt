@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
+import vegabobo.languageselector.BuildConfig
 import javax.inject.Inject
 
 
@@ -54,6 +55,8 @@ class MainScreenVm @Inject constructor(
             PackageManager.ApplicationInfoFlags.of(0)
         ).mapNotNull {
             if (!it.enabled)
+                null
+            else if(BuildConfig.APPLICATION_ID == it.packageName)
                 null
             else if (getAlsoSystemApps)
                 it

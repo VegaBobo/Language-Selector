@@ -54,8 +54,11 @@ class QSTile : TileService() {
                     currentAppPackage,
                     PackageManager.ApplicationInfoFlags.of(0)
                 )
-            if ((targetPackage.flags and ApplicationInfo.FLAG_SYSTEM) != 0) {
-                // Prevent system apps to have their language override from QS
+            if (
+                (targetPackage.flags and ApplicationInfo.FLAG_SYSTEM) != 0 ||
+                targetPackage.packageName == BuildConfig.APPLICATION_ID
+            ) {
+                // Prevent system apps and this app package to have locale replaced by QS toggle
                 setDisabledTile()
                 return@run
             }
@@ -72,6 +75,9 @@ class QSTile : TileService() {
                 } catch (e: Exception) {
                     ""
                 }.ifBlank { getString(R.string.system_default) }
+            qsTile.state = Tile.STATE_INACTIVE
+            qsTile.updateTile()
+
             qsTile.label = currentLocale
             qsTile.subtitle = packageManager.getLabel(targetPackage)
             qsTile.state = if (isCustomLocale) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
@@ -126,7 +132,18 @@ class QSTile : TileService() {
             Log.d(BuildConfig.APPLICATION_ID, "QSTile onStopListening()")
         isLoaded = false
         locales.clear()
-        if (UserServiceProvider.isConnected())
+
+        var shouldUnbind = true
+        run {
+            try {
+                val service = UserServiceProvider.connection.SERVICE ?: return@run
+                if (BuildConfig.APPLICATION_ID == service.firstRunningTaskPackage)
+                    shouldUnbind = false
+            } catch (e: Exception) {
+                //
+            }
+        }
+        if (UserServiceProvider.isConnected() && shouldUnbind)
             Shizuku.unbindUserService(
                 ShizukuArgs.userServiceArgs,
                 UserServiceProvider.connection,
