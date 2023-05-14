@@ -101,7 +101,7 @@ class MainScreenVm @Inject constructor(
             handler.removeCallbacks(workRunnable!!)
 
         workRunnable = Runnable { searchQuery.value = newText }
-        handler.postDelayed(workRunnable!!, 500)
+        handler.postDelayed(workRunnable!!, 1000)
     }
 
 }
