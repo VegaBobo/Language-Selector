@@ -38,7 +38,7 @@ fun MainScreen(
                 onClickToggleDropdown = { mainScreenVm.toggleDropdown() },
                 onSearchTextChange = { mainScreenVm.onSearchTextFieldChange(it) },
                 onToggleDropdown = { mainScreenVm.toggleDropdown() },
-                onClickToggleSystemApps = { mainScreenVm.onClickToggleSystemApps() },
+                onClickToggleSystemApps = { mainScreenVm.onToggleDisplaySystemApps() },
                 onClickAbout = { navigateToAbout() }
             )
         }
@@ -71,6 +71,12 @@ fun MainScreen(
             item { Spacer(modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())) }
         }
     }
+
+    if (uiState.isSystemAppDialogVisible)
+        SystemDialogWarn(
+            onClickCancel = { mainScreenVm.onToggleDisplaySystemApps() },
+            onClickContinue = { mainScreenVm.toggleSystemAppsVisibility() }
+        )
 
     if (uiState.isSearchVisible)
         BackHandler { mainScreenVm.toggleSearch() }

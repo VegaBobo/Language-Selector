@@ -56,7 +56,7 @@ class MainScreenVm @Inject constructor(
         ).mapNotNull {
             if (!it.enabled)
                 null
-            else if(BuildConfig.APPLICATION_ID == it.packageName)
+            else if (BuildConfig.APPLICATION_ID == it.packageName)
                 null
             else if (getAlsoSystemApps)
                 it
@@ -74,11 +74,27 @@ class MainScreenVm @Inject constructor(
         _uiState.update { it.copy(isDropdownVisible = newDropdownVisibility) }
     }
 
-    fun onClickToggleSystemApps() {
+    fun toggleSystemAppsVisibility() {
         val newShowSystemApps = !uiState.value.isShowingSystemApps
-        _uiState.update { it.copy(isLoading = true, isShowingSystemApps = newShowSystemApps) }
+        _uiState.update {
+            it.copy(
+                isSystemAppDialogVisible = false,
+                isLoading = true,
+                isShowingSystemApps = newShowSystemApps
+            )
+        }
         fillListOfApps(newShowSystemApps)
         toggleDropdown()
+    }
+
+    fun onToggleDisplaySystemApps() {
+        if (!uiState.value.isShowingSystemApps) {
+            val newSystemDialogWarnVisibility = !uiState.value.isSystemAppDialogVisible
+            _uiState.update { it.copy(isSystemAppDialogVisible = newSystemDialogWarnVisibility) }
+        } else {
+            toggleSystemAppsVisibility()
+            _uiState.update { it.copy(isShowingSystemApps = false) }
+        }
     }
 
     fun onClickProceedShizuku() {
@@ -100,7 +116,7 @@ class MainScreenVm @Inject constructor(
     fun onSearchTextFieldChange(newText: String) {
         _uiState.update { it.copy(searchTextFieldValue = newText) }
 
-        if(workRunnable != null)
+        if (workRunnable != null)
             handler.removeCallbacks(workRunnable!!)
 
         workRunnable = Runnable { searchQuery.value = newText }

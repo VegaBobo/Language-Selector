@@ -12,6 +12,7 @@ data class MainScreenState(
     val isShowingSystemApps: Boolean = false,
     val isShizukuAvail: Boolean = false,
     val isSearchVisible: Boolean = false,
+     val isSystemAppDialogVisible: Boolean = false,
     val isAboutDialogVisible: Boolean = false,
     val listOfApps: MutableList<ApplicationInfo> = mutableStateListOf()
 )
