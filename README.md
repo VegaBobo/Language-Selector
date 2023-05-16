@@ -8,6 +8,11 @@ To use this app:
 
 You can get this app at Releases section.
 
+<div>
+<img src="https://raw.githubusercontent.com/VegaBobo/Language-Selector/main/other/preview_1.png" alt="preview" width="200"/>  
+<img src="https://raw.githubusercontent.com/VegaBobo/Language-Selector/main/other/preview_2.png" alt="preview" width="200"/>  
+</div>
+
 ### Features
 
 - Set individual app languages
