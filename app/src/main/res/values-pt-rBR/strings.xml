@@ -23,4 +23,9 @@
     <string name="app">Aplicativo</string>
     <string name="ghrepo">GitHub repo.</string>
     <string name="view_source">Ver código fonte</string>
+    <string name="loading">Carregando…</string>
+    <string name="unavailable">Indisponível</string>
+    <string name="warning">Aviso</string>
+    <string name="warning_system_apps">Selecionar idiomas de aplicativos do sistema não é recomendado, você tem certeza?</string>
+    <string name="cancel">Cancelar</string>
 </resources>
