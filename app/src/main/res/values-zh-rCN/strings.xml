@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_language">App语言</string>
+    <string name="system_default">系统默认</string>
+    <string name="user_languages">用户语言</string>
+    <string name="pinned">置顶:</string>
+    <string name="region">地区:</string>
+    <string name="all_languages">全部语言:</string>
+    <string name="show_only_user_apps">只显示用户应用</string>
+    <string name="show_system_apps">显示系统应用</string>
+    <string name="settings">设置</string>
+    <string name="open">打开</string>
+    <string name="close">关闭</string>
+    <string name="permissions_required">需要权限</string>
+    <string name="shizuku_required">该应用需要 Shizuku,请安装并启动 Shizuku,获得 Shizuku 权限后,你可以继续</string>
+    <string name="proceed">继续</string>
+    <string name="pinned_ok">%1$s 已置顶</string>
+    <string name="unpinned">%1$s 取消置顶</string>
+    <string name="about">关于</string>
+    <string name="deps_libs">依赖库信息:</string>
+    <string name="version">版本 %1$s (%2$s)</string>
+    <string name="app">应用</string>
+    <string name="ghrepo">Github 仓库</string>
+    <string name="view_source">查看源码</string>
+    <string name="loading">加载中...</string>
+    <string name="unavailable">不可用</string>
+    <string name="warning">警告</string>
+    <string name="warning_system_apps">不建议对系统应用选择语言,你确定?</string>
+    <string name="cancel">取消</string>
+</resources>
