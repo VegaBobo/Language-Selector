@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Language Selector</string>
+    <string name="app_language">アプリの言語</string>
+    <string name="system_default">システムのデフォルト</string>
+    <string name="user_languages">ユーザー言語:</string>
+    <string name="pinned">ピン留め:</string>
+    <string name="region">地域:</string>
+    <string name="all_languages">すべての言語:</string>
+    <string name="show_only_user_apps">ユーザーアプリのみを表示</string>
+    <string name="show_system_apps">システムアプリを表示</string>
+    <string name="settings">設定</string>
+    <string name="open">開く</string>
+    <string name="close">閉じる</string>
+    <string name="permissions_required">必要な許可</string>
+    <string name="shizuku_required">このアプリにはShizukuが必要です。Shizukuをインストールしてから起動し、Shizukuにこのアプリへのアクセス許可を与えた後、次に進んでください。</string>
+    <string name="proceed">続行</string>
+    <string name="pinned_ok">%1$s をピン留めしました</string>
+    <string name="unpinned">%1$s のピン留めを解除しました</string>
+    <string name="about">About</string>
+    <string name="deps_libs">依存関係およびライブラリ:</string>
+    <string name="version">Version %1$s (%2$s)</string>
+    <string name="app">アプリケーション</string>
+    <string name="ghrepo">GitHub リポジトリ</string>
+    <string name="view_source">ソースコードを表示</string>
+    <string name="loading">読み込み中…</string>
+    <string name="unavailable">利用できません</string>
+    <string name="warning">警告</string>
+    <string name="warning_system_apps">システムアプリから言語を選択することは推奨されていません。続行しますか？</string>
+    <string name="cancel">キャンセル</string>
+</resources>
