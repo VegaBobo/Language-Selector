@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import vegabobo.languageselector.R
@@ -24,7 +23,6 @@ fun MainScreen(
     navigateToAbout: () -> Unit,
 ) {
     val uiState by mainScreenVm.uiState.collectAsState()
-    val pm = LocalContext.current.packageManager
 
     BaseScreen(
         screenTitle = stringResource(R.string.app_name),
@@ -52,21 +50,21 @@ fun MainScreen(
         ) {
             if (uiState.isLoading)
                 item { LinearProgressIndicator(modifier = Modifier.fillMaxWidth()) }
-            items(uiState.listOfApps.size) {
-                val thisPackage = uiState.listOfApps[it]
-                val appName = pm.getLabel(thisPackage)
-                val packageName = thisPackage.packageName
-                val appIconDrawable = pm.getAppIcon(thisPackage)
-                val containsInSearchQuery =
-                    packageName.lowercase().contains(mainScreenVm.searchQuery.value.lowercase()) ||
-                            appName.lowercase().contains(mainScreenVm.searchQuery.value.lowercase())
-                if (uiState.searchTextFieldValue == "" || containsInSearchQuery)
-                    AppListItem(
-                        packageName = packageName,
-                        appName = appName,
-                        drawable = appIconDrawable,
-                        onClickApp = { navigateToAppScreen(packageName) }
-                    )
+
+            val filteredApps = uiState.listOfApps.filter {
+                uiState.searchTextFieldValue == "" ||
+                        it.appPackageName.lowercase().contains(mainScreenVm.searchQuery.value.lowercase()) ||
+                        it.appName.lowercase().contains(mainScreenVm.searchQuery.value.lowercase())
+            }
+
+            items(filteredApps.size) {
+                val app = filteredApps[it]
+                AppListItem(
+                    packageName = app.appPackageName,
+                    appName = app.appName,
+                    drawable = app.appIcon,
+                    onClickApp = { navigateToAppScreen(app.appPackageName) }
+                )
             }
             item { Spacer(modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())) }
         }

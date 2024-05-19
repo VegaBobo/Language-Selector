@@ -14,7 +14,13 @@ data class MainScreenState(
     val isSearchVisible: Boolean = false,
      val isSystemAppDialogVisible: Boolean = false,
     val isAboutDialogVisible: Boolean = false,
-    val listOfApps: MutableList<ApplicationInfo> = mutableStateListOf()
+    val listOfApps: MutableList<AppInfo> = mutableStateListOf()
+)
+
+data class AppInfo (
+    val appIcon: Drawable,
+    val appName: String,
+    val appPackageName: String,
 )
 
 fun PackageManager.getLabel(applicationInfo: ApplicationInfo): String {
