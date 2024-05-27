@@ -43,8 +43,14 @@ class MainScreenVm @Inject constructor(
     fun fillListOfApps(getAlsoSystemApps: Boolean = false) {
         _uiState.value.listOfApps.clear()
         viewModelScope.launch(Dispatchers.IO) {
-            val packageList = getInstalledPackages(getAlsoSystemApps).map { it }
-            val sortedList = packageList.sortedBy { app.packageManager.getLabel(it).lowercase() }
+            val packageList = getInstalledPackages(getAlsoSystemApps).map {
+                AppInfo(
+                    appIcon = app.packageManager.getAppIcon(it),
+                    appName = app.packageManager.getLabel(it),
+                    appPackageName = it.packageName,
+                )
+            }
+            val sortedList = packageList.sortedBy { it.appName.lowercase() }
             _uiState.value.listOfApps.addAll(sortedList)
             _uiState.update { it.copy(isLoading = false) }
         }
