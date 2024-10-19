@@ -27,7 +27,7 @@ You can get this app at Releases section.
 
 This app parses Locale (java.util.Locale) from Locale.getAvailableLocales(), consequently, numerous locales are present in the app, the language list is huge, if someone want to improve that, feel free to send a PR, because this way is pretty slow and languages aren't filtered accurately.
 
-### Usage
+###  Usage
 
 Before using this app, you MUST install and start Shizuku, the way this app works makes Shizuku MANDATORY, after that, you should follow this steps:
 

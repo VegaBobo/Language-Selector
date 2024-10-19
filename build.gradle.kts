@@ -5,4 +5,5 @@ plugins {
     alias(libs.plugins.com.android.library) apply false
     alias(libs.plugins.com.google.dagger.hilt) apply false
     alias(libs.plugins.com.mikepenz.aboutlibraries) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }

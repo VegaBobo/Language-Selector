@@ -3,17 +3,18 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.google.dagger.hilt)
     alias(libs.plugins.com.mikepenz.aboutlibraries)
+    alias(libs.plugins.compose.compiler)
     kotlin("kapt")
 }
 
 android {
     namespace = "vegabobo.languageselector"
-    compileSdk = 33
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "vegabobo.languageselector"
         minSdk = 33
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 5
         versionName = "1.04"
 
@@ -34,19 +35,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     buildFeatures {
         buildConfig = true
         compose = true
         aidl = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.4"
     }
     packaging {
         resources {

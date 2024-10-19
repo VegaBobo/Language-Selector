@@ -1,23 +1,19 @@
 [versions]
 aboutlibraries = "10.6.3"
 hiddenapibypass = "4.3"
-hilt = "2.46"
-hilt-navigation-compose = "1.0.0"
-material-icons-extended = "1.4.3"
-navigation-compose = "2.5.3"
+hilt = "2.49"
+hilt-navigation-compose = "1.2.0"
+material-icons-extended = "1.7.4"
+navigation-compose = "2.8.3"
 shizuku = "13.1.1"
-com-android-application = "8.0.1"
-org-jetbrains-kotlin-android = "1.8.10"
-core-ktx = "1.10.0"
-junit = "4.13.2"
-androidx-test-ext-junit = "1.1.5"
-espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.6.1"
-activity-compose = "1.7.1"
-compose-bom = "2023.05.00"
-com-android-library = "8.0.1"
-appcompat = "1.6.1"
-material = "1.9.0"
+com-android-application = "8.7.1"
+org-jetbrains-kotlin-android = "2.0.0"
+core-ktx = "1.13.1"
+lifecycle-runtime-ktx = "2.8.6"
+activity-compose = "1.9.3"
+compose-bom = "2024.10.00"
+com-android-library = "8.7.1"
+material = "1.12.0"
 
 [libraries]
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
@@ -39,14 +35,13 @@ ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "com-android-application" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "org-jetbrains-kotlin-android" }
 com-android-library = { id = "com.android.library", version.ref = "com-android-library" }
 com-google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 com-mikepenz-aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }

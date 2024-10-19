@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DropdownMenu
@@ -95,7 +95,7 @@ fun SearchBar(
         IconButton(onClick = { onClickBack() }) {
             Icon(
                 contentDescription = "Back icon",
-                imageVector = Icons.Outlined.ArrowBack
+                imageVector = Icons.AutoMirrored.Outlined.ArrowBack
             )
         }
         TextField(
@@ -104,7 +104,7 @@ fun SearchBar(
                 .clip(RoundedCornerShape(12.dp))
                 .weight(1f),
             maxLines = 1,
-            colors = TextFieldDefaults.textFieldColors(
+            colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
