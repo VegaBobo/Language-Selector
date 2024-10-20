@@ -8,6 +8,7 @@ import android.os.Looper
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import vegabobo.languageselector.BuildConfig
+import vegabobo.languageselector.RootReceivedListener
 import javax.inject.Inject
 
 
@@ -28,16 +30,29 @@ class MainScreenVm @Inject constructor(
     private val _uiState = MutableStateFlow(MainScreenState())
     val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
 
-    fun refreshShizukuAvail() {
+    fun loadOperationMode() {
+        if(Shell.getShell().isAlive)
+            Shell.getShell().close()
+        Shell.getShell()
+        if(Shell.isAppGrantedRoot() == true) {
+            _uiState.update { it.copy(operationMode = OperationMode.ROOT) }
+            RootReceivedListener.onRootReceived()
+            return
+        }
+
         val isAvail = Shizuku.pingBinder() &&
                 Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-        if (isAvail)
-            _uiState.update { it.copy(isShizukuAvail = true) }
+        if (isAvail) {
+            _uiState.update { it.copy(operationMode = OperationMode.SHIZUKU) }
+            return
+        }
+
+        _uiState.update { it.copy(operationMode = OperationMode.NONE) }
     }
 
     init {
+        loadOperationMode()
         fillListOfApps()
-        refreshShizukuAvail()
     }
 
     fun fillListOfApps(getAlsoSystemApps: Boolean = false) {
@@ -104,7 +119,7 @@ class MainScreenVm @Inject constructor(
     }
 
     fun onClickProceedShizuku() {
-        refreshShizukuAvail()
+        loadOperationMode()
     }
 
     fun toggleSearch() {

@@ -1,17 +1,21 @@
 package vegabobo.languageselector
 
 import android.content.ComponentName
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
+import com.topjohnwu.superuser.Shell
+import com.topjohnwu.superuser.ipc.RootService
+import dagger.hilt.android.AndroidEntryPoint
+import rikka.shizuku.Shizuku
+import vegabobo.languageselector.service.RootUserService
 import vegabobo.languageselector.service.UserService
 import vegabobo.languageselector.service.UserServiceProvider
 import vegabobo.languageselector.ui.screen.Navigation
 import vegabobo.languageselector.ui.theme.LanguageSelector
-import dagger.hilt.android.AndroidEntryPoint
-import rikka.shizuku.Shizuku
 
 object ShizukuArgs {
     val userServiceArgs =
@@ -24,8 +28,14 @@ object ShizukuArgs {
             .version(BuildConfig.VERSION_CODE)
 }
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListener {
+
+    init {
+        Shell.enableVerboseLogging = BuildConfig.DEBUG
+        Shell.setDefaultBuilder(Shell.Builder.create().setTimeout(10))
+    }
 
     val acRequestCode = 1
 
@@ -64,6 +74,13 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
             Shizuku.addRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
             checkPermission(acRequestCode)
         }
+
+        RootReceivedListener.setListener(object : IRootListener {
+            override fun onRootReceived() {
+                val intent = Intent(this@MainActivity, RootUserService::class.java)
+                RootService.bind(intent, UserServiceProvider.connection)
+            }
+        })
     }
 
     override fun onResume() {
@@ -80,7 +97,11 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
     override fun onDestroy() {
         Shizuku.removeRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
         if (UserServiceProvider.isConnected())
-            Shizuku.unbindUserService(ShizukuArgs.userServiceArgs, UserServiceProvider.connection, true)
+            Shizuku.unbindUserService(
+                ShizukuArgs.userServiceArgs,
+                UserServiceProvider.connection,
+                true
+            )
         super.onDestroy()
     }
 

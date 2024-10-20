@@ -5,14 +5,18 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.mutableStateListOf
 
+enum class OperationMode {
+    NONE, SHIZUKU, ROOT
+}
+
 data class MainScreenState(
     val searchTextFieldValue: String = "",
     val isLoading: Boolean = true,
     val isDropdownVisible: Boolean = false,
     val isShowingSystemApps: Boolean = false,
-    val isShizukuAvail: Boolean = false,
+    val operationMode: OperationMode = OperationMode.NONE,
     val isSearchVisible: Boolean = false,
-     val isSystemAppDialogVisible: Boolean = false,
+    val isSystemAppDialogVisible: Boolean = false,
     val isAboutDialogVisible: Boolean = false,
     val listOfApps: MutableList<AppInfo> = mutableStateListOf()
 )

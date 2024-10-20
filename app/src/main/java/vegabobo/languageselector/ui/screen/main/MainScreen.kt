@@ -41,7 +41,7 @@ fun MainScreen(
             )
         }
     ) { paddingValues ->
-        if (!uiState.isShizukuAvail) {
+        if (uiState.operationMode == OperationMode.NONE) {
             ShizukuRequiredWarning { mainScreenVm.onClickProceedShizuku() }
         }
         LazyColumn(
