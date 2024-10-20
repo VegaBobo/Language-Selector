@@ -48,7 +48,7 @@ fun AboutScreen(
     val libraries = libs.value!!.libraries
 
     BaseScreen(
-        screenTitle = stringResource(R.string.about),
+        title = stringResource(R.string.about),
         navIcon = { BackButton { navigateBack() } }
     ) {
         LazyColumn(

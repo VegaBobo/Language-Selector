@@ -15,7 +15,6 @@ data class MainScreenState(
     val isDropdownVisible: Boolean = false,
     val isShowingSystemApps: Boolean = false,
     val operationMode: OperationMode = OperationMode.NONE,
-    val isSearchVisible: Boolean = false,
     val isSystemAppDialogVisible: Boolean = false,
     val isAboutDialogVisible: Boolean = false,
     val listOfApps: MutableList<AppInfo> = mutableStateListOf()

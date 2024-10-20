@@ -27,4 +27,6 @@
     <string name="warning">Warning</string>
     <string name="warning_system_apps">Selecting language from system apps is not recommended, are you sure?</string>
     <string name="cancel">Cancel</string>
+
+    <string name="search">Search apps</string>
 </resources>

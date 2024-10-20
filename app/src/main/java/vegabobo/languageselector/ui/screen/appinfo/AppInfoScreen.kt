@@ -69,7 +69,7 @@ fun AppInfoScreen(
         appInfoVm.updatePinnedLangsFromSP()
     }
     BaseScreen(
-        screenTitle = stringResource(R.string.app_language),
+        title = stringResource(R.string.app_language),
         navIcon = {
             BackButton { navigateBack() }
         }

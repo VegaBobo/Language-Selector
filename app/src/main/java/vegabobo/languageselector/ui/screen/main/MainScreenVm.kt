@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -121,14 +122,6 @@ class MainScreenVm @Inject constructor(
     fun onClickProceedShizuku() {
         loadOperationMode()
     }
-
-    fun toggleSearch() {
-        val newSearchVisibility = !uiState.value.isSearchVisible
-        if (!newSearchVisibility)
-            _uiState.update { it.copy(searchTextFieldValue = "") }
-        _uiState.update { it.copy(isSearchVisible = newSearchVisibility) }
-    }
-
 
     val searchQuery = mutableStateOf("")
     private val handler = Handler(Looper.getMainLooper())

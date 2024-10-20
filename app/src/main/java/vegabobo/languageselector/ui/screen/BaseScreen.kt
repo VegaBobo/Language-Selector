@@ -16,22 +16,29 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseScreen(
-    screenTitle: String,
-    navIcon: @Composable () -> Unit? = {},
+    title: String = "",
+    searchBar: (@Composable () -> Unit)? = null,
+    navIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
-        modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                scrollBehavior = scrollBehavior,
-                navigationIcon = { navIcon() },
-                title = { Text(screenTitle) },
-                actions = { actions(this) }
-            )
+            if (searchBar != null) {
+                searchBar()
+            } else {
+                TopAppBar(
+                    scrollBehavior = scrollBehavior,
+                    navigationIcon = { navIcon?.invoke() },
+                    title = { Text(title) },
+                    actions = { actions(this) }
+                )
+            }
         },
         content = { content(it) }
     )
