@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
@@ -15,6 +16,7 @@ import vegabobo.languageselector.service.RootUserService
 import vegabobo.languageselector.service.UserService
 import vegabobo.languageselector.service.UserServiceProvider
 import vegabobo.languageselector.ui.screen.Navigation
+import vegabobo.languageselector.ui.screen.main.OperationMode
 import vegabobo.languageselector.ui.theme.LanguageSelector
 
 object ShizukuArgs {
@@ -77,7 +79,7 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
 
         RootReceivedListener.setListener(object : IRootListener {
             override fun onRootReceived() {
-                val intent = Intent(this@MainActivity, RootUserService::class.java)
+                val intent = Intent(application, RootUserService::class.java)
                 RootService.bind(intent, UserServiceProvider.connection)
             }
         })
@@ -96,12 +98,19 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
 
     override fun onDestroy() {
         Shizuku.removeRequestPermissionResultListener(REQUEST_PERMISSION_RESULT_LISTENER)
-        if (UserServiceProvider.isConnected())
-            Shizuku.unbindUserService(
-                ShizukuArgs.userServiceArgs,
-                UserServiceProvider.connection,
-                true
-            )
+        RootReceivedListener.destroy()
+        if (UserServiceProvider.isConnected()) {
+            when (UserServiceProvider.opMode) {
+                OperationMode.ROOT -> RootService.unbind(UserServiceProvider.connection)
+                OperationMode.SHIZUKU -> Shizuku.unbindUserService(
+                    ShizukuArgs.userServiceArgs,
+                    UserServiceProvider.connection,
+                    true
+                )
+
+                else -> Log.d(BuildConfig.APPLICATION_ID, "UserService not bound.")
+            }
+        }
         super.onDestroy()
     }
 

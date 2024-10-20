@@ -15,4 +15,8 @@ object RootReceivedListener {
     fun onRootReceived() {
         callback?.onRootReceived()
     }
+
+    fun destroy() {
+        callback = null
+    }
 }
