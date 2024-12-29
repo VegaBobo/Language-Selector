@@ -4,6 +4,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.compose.runtime.mutableStateListOf
+import vegabobo.languageselector.dao.AppInfoEntity
 
 enum class OperationMode {
     NONE, SHIZUKU, ROOT
@@ -41,6 +42,10 @@ data class AppInfo(
 ) {
     fun isSystemApp() = labels.contains(AppLabels.SYSTEM_APP)
     fun isModified() = labels.contains(AppLabels.MODIFIED)
+}
+
+fun AppInfo.toAppInfoEntity(): AppInfoEntity {
+    return AppInfoEntity(this.pkg, this.name, System.currentTimeMillis())
 }
 
 fun PackageManager.getLabel(applicationInfo: ApplicationInfo): String {

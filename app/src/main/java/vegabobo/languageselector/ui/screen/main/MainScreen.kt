@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,13 +40,36 @@ fun MainScreen(
 ) {
     val uiState by mainScreenVm.uiState.collectAsState()
     val sb = remember { SnackbarHostState() }
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         mainScreenVm.reloadLastSelectedItem()
         mainScreenVm.uiState.collectLatest {
             when (it.snackBarDisplay) {
-                SnackBarDisplay.MOVED_TO_TOP -> sb.showSnackbar("Modified app has been moved up")
-                SnackBarDisplay.MOVED_TO_BOTTOM -> sb.showSnackbar("Unmodified has been moved down")
+                SnackBarDisplay.MOVED_TO_TOP -> {
+                    val r = sb.showSnackbar(
+                        message = "Modified app has been moved up",
+                        actionLabel = "Navigate"
+                    )
+                    if (r == SnackbarResult.ActionPerformed) {
+                        val i =
+                            mainScreenVm.getIndexFromAppInfoItem() + 1 /* first item is a spacer */
+                        lazyListState.animateScrollToItem(i)
+                    }
+                }
+
+                SnackBarDisplay.MOVED_TO_BOTTOM -> {
+                    val r = sb.showSnackbar(
+                        message = "Unmodified has been moved down",
+                        actionLabel = "Navigate"
+                    )
+                    if (r == SnackbarResult.ActionPerformed) {
+                        val i =
+                            mainScreenVm.getIndexFromAppInfoItem() + 1 /* first item is a spacer */
+                        lazyListState.animateScrollToItem(i)
+                    }
+                }
+
                 else -> {}
             }
             mainScreenVm.resetSnackBarDisplay()
@@ -92,6 +117,7 @@ fun MainScreen(
                 }
 
                 LazyColumn(
+                    state = lazyListState,
                     modifier = Modifier.semantics { traversalIndex = 1f }
                 ) {
                     item {
@@ -103,7 +129,7 @@ fun MainScreen(
                     }
                     items(uiState.listOfApps.size) {
                         val thisApp = uiState.listOfApps[it]
-                        if (!uiState.isShowSystemAppsHome && thisApp.isSystemApp())
+                        if (!uiState.isShowSystemAppsHome && thisApp.isSystemApp() && !thisApp.isModified())
                             return@items
                         AppListItem(
                             modifier = Modifier.padding(

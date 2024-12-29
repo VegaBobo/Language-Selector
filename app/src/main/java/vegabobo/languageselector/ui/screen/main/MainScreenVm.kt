@@ -1,7 +1,6 @@
 package vegabobo.languageselector.ui.screen.main
 
 import android.app.Application
-import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Handler
@@ -20,6 +19,7 @@ import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import vegabobo.languageselector.BuildConfig
 import vegabobo.languageselector.RootReceivedListener
+import vegabobo.languageselector.dao.AppInfoDb
 import vegabobo.languageselector.service.UserServiceProvider
 import javax.inject.Inject
 
@@ -27,13 +27,16 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenVm @Inject constructor(
     val app: Application,
-    val sp: SharedPreferences
+    appInfoDb: AppInfoDb
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(MainScreenState())
     val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
-    val historySPKey = "history"
     var lastSelectedApp: AppInfo? = null
+    val dao = appInfoDb.appInfoDao()
+
+    fun getIndexFromAppInfoItem(): Int {
+        return _uiState.value.listOfApps.indexOfFirst { it.pkg == lastSelectedApp?.pkg }
+    }
 
     fun loadOperationMode() {
         if (Shell.getShell().isAlive)
@@ -135,14 +138,11 @@ class MainScreenVm @Inject constructor(
         handler.postDelayed(workRunnable!!, 1000)
     }
 
-    fun updateHistoryItems() =
-        _uiState.update { it.copy(history = getAppHistory().toMutableList()) }
-
     fun onSearchExpandedChange() {
         val isExpanded = !uiState.value.isExpanded
         _uiState.update { it.copy(isExpanded = isExpanded) }
         if (isExpanded)
-            updateHistoryItems()
+            updateHistory()
         else
             _uiState.update { it.copy(searchTextFieldValue = "") }
     }
@@ -155,30 +155,37 @@ class MainScreenVm @Inject constructor(
             lb.add(label)
     }
 
-    fun getAppHistory(): List<AppInfo> {
-        val pkgHistory = sp.getStringSet(historySPKey, emptySet()) ?: emptySet<String>()
-        return pkgHistory.mapNotNull { pkg ->
-            val listOfApps = _uiState.value.listOfApps
-            val idx = listOfApps.indexOfFirst { it.pkg == pkg }
-            if (idx == -1)
-                null
-            else
-                listOfApps[idx]
+    fun updateHistory() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val appInfoList = dao.getHistory().map { it.pkg }
+            val history = appInfoList.mapNotNull { pkg ->
+                val listOfApps = _uiState.value.listOfApps
+                val idx = listOfApps.indexOfFirst { it.pkg == pkg }
+                if (idx == -1)
+                    null
+                else
+                    listOfApps[idx]
+            }
+            _uiState.value.history.clear()
+            _uiState.value.history.addAll(history)
         }
     }
 
     fun addAppToHistory(ai: AppInfo) {
-        val editor = sp.edit()
-        val pkgHistory = getAppHistory().map { it.pkg }.toMutableList()
-        pkgHistory.add(ai.pkg)
-        editor.putStringSet(historySPKey, pkgHistory.toSet())
-        editor.apply()
-        updateHistoryItems()
+        viewModelScope.launch(Dispatchers.IO) {
+            if (dao.findByPkg(ai.pkg) == null) {
+                dao.insert(ai.toAppInfoEntity())
+            }
+            dao.setLastSelected(ai.pkg, System.currentTimeMillis())
+            updateHistory()
+        }
     }
 
     fun onClickClear() {
-        sp.edit().putStringSet(historySPKey, emptySet<String>()).apply()
-        updateHistoryItems()
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.cleanLastSelectedAll()
+            updateHistory()
+        }
     }
 
     fun reloadLastSelectedItem() {
