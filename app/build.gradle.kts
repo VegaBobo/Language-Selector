@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.com.google.dagger.hilt)
     alias(libs.plugins.com.mikepenz.aboutlibraries)
     alias(libs.plugins.compose.compiler)
-    kotlin("kapt")
+    alias(libs.plugins.com.google.devtools.ksp)
 }
 
 android {
@@ -54,10 +54,6 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 aboutLibraries {
     excludeFields = arrayOf("generated")
 }
@@ -85,7 +81,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 
     implementation(libs.aboutlibraries.core)
 
@@ -93,6 +89,9 @@ dependencies {
     implementation(libs.shizuku.provider)
 
     implementation(libs.hiddenapibypass)
+
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 
     compileOnly(project(":hidden_api"))
 }
