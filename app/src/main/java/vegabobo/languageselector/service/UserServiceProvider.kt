@@ -15,6 +15,19 @@ object UserServiceProvider {
     var connection = Connection()
     var opMode = OperationMode.NONE
 
+    // Blocking
+    fun getService(): IUserService {
+        var timeout = 0
+        while (!isConnected()) {
+            timeout += 1000
+            if (timeout > 20000) {
+                throw Exception("Service unavailable.")
+            }
+            Thread.sleep(1000)
+        }
+        return this.connection.SERVICE!!
+    }
+
     fun run(
         onFail: () -> Unit = {},
         onConnected: suspend IUserService.() -> Unit,

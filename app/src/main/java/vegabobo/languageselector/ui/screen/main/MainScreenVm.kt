@@ -1,11 +1,11 @@
 package vegabobo.languageselector.ui.screen.main
 
 import android.app.Application
+import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,22 +20,26 @@ import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import vegabobo.languageselector.BuildConfig
 import vegabobo.languageselector.RootReceivedListener
+import vegabobo.languageselector.service.UserServiceProvider
 import javax.inject.Inject
 
 
 @HiltViewModel
 class MainScreenVm @Inject constructor(
-    val app: Application
+    val app: Application,
+    val sp: SharedPreferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainScreenState())
     val uiState: StateFlow<MainScreenState> = _uiState.asStateFlow()
+    val historySPKey = "history"
+    var lastSelectedApp: AppInfo? = null
 
     fun loadOperationMode() {
-        if(Shell.getShell().isAlive)
+        if (Shell.getShell().isAlive)
             Shell.getShell().close()
         Shell.getShell()
-        if(Shell.isAppGrantedRoot() == true) {
+        if (Shell.isAppGrantedRoot() == true) {
             _uiState.update { it.copy(operationMode = OperationMode.ROOT) }
             RootReceivedListener.onRootReceived()
             return
@@ -52,42 +56,47 @@ class MainScreenVm @Inject constructor(
     }
 
     init {
-        loadOperationMode()
         fillListOfApps()
     }
 
-    fun fillListOfApps(getAlsoSystemApps: Boolean = false) {
-        _uiState.value.listOfApps.clear()
+    fun parseAppInfo(a: ApplicationInfo): AppInfo {
+        val isSystemApp = (a.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        val service = UserServiceProvider.getService()
+        val languagePreferences = service.getApplicationLocales(a.packageName)
+        val labels = arrayListOf<AppLabels>()
+        if (isSystemApp)
+            labels.add(AppLabels.SYSTEM_APP)
+        if (!languagePreferences.isEmpty)
+            labels.add(AppLabels.MODIFIED)
+        return AppInfo(
+            icon = app.packageManager.getAppIcon(a),
+            name = app.packageManager.getLabel(a),
+            pkg = a.packageName,
+            labels = labels
+        )
+    }
+
+    fun fillListOfApps() {
         viewModelScope.launch(Dispatchers.IO) {
-            val packageList = getInstalledPackages(getAlsoSystemApps).map {
-                AppInfo(
-                    appIcon = app.packageManager.getAppIcon(it),
-                    appName = app.packageManager.getLabel(it),
-                    appPackageName = it.packageName,
-                )
-            }
-            val sortedList = packageList.sortedBy { it.appName.lowercase() }
+            if (_uiState.value.operationMode == OperationMode.NONE)
+                loadOperationMode()
+            val packageList = getInstalledPackages().map { parseAppInfo(it) }
+            var sortedList =
+                packageList.sortedBy { it.name.lowercase() }.sortedBy { !it.isModified() }
+            _uiState.value.listOfApps.clear()
             _uiState.value.listOfApps.addAll(sortedList)
             _uiState.update { it.copy(isLoading = false) }
         }
     }
 
-    fun getInstalledPackages(getAlsoSystemApps: Boolean = false): List<ApplicationInfo> {
+    fun getInstalledPackages(): List<ApplicationInfo> {
         return app.packageManager.getInstalledApplications(
             PackageManager.ApplicationInfoFlags.of(0)
         ).mapNotNull {
-            if (!it.enabled)
+            if (!it.enabled || BuildConfig.APPLICATION_ID == it.packageName)
                 null
-            else if (BuildConfig.APPLICATION_ID == it.packageName)
-                null
-            else if (getAlsoSystemApps)
-                it
             else
-                if (it.flags and ApplicationInfo.FLAG_SYSTEM == 0)
-                    it
-                else
-                    null
-
+                it
         }
     }
 
@@ -97,26 +106,15 @@ class MainScreenVm @Inject constructor(
     }
 
     fun toggleSystemAppsVisibility() {
-        val newShowSystemApps = !uiState.value.isShowingSystemApps
+        val newShowSystemApps = !uiState.value.isShowSystemAppsHome
         _uiState.update {
             it.copy(
-                isSystemAppDialogVisible = false,
                 isLoading = true,
-                isShowingSystemApps = newShowSystemApps
+                isShowSystemAppsHome = newShowSystemApps
             )
         }
-        fillListOfApps(newShowSystemApps)
+        fillListOfApps()
         toggleDropdown()
-    }
-
-    fun onToggleDisplaySystemApps() {
-        if (!uiState.value.isShowingSystemApps) {
-            val newSystemDialogWarnVisibility = !uiState.value.isSystemAppDialogVisible
-            _uiState.update { it.copy(isSystemAppDialogVisible = newSystemDialogWarnVisibility) }
-        } else {
-            toggleSystemAppsVisibility()
-            _uiState.update { it.copy(isShowingSystemApps = false) }
-        }
     }
 
     fun onClickProceedShizuku() {
@@ -137,4 +135,76 @@ class MainScreenVm @Inject constructor(
         handler.postDelayed(workRunnable!!, 1000)
     }
 
+    fun updateHistoryItems() =
+        _uiState.update { it.copy(history = getAppHistory().toMutableList()) }
+
+    fun onSearchExpandedChange() {
+        val isExpanded = !uiState.value.isExpanded
+        _uiState.update { it.copy(isExpanded = isExpanded) }
+        if (isExpanded)
+            updateHistoryItems()
+        else
+            _uiState.update { it.copy(searchTextFieldValue = "") }
+    }
+
+    fun onSelectedLabelChange(label: AppLabels) {
+        val lb = _uiState.value.selectLabels
+        if (lb.contains(label))
+            lb.remove(label)
+        else
+            lb.add(label)
+    }
+
+    fun getAppHistory(): List<AppInfo> {
+        val pkgHistory = sp.getStringSet(historySPKey, emptySet()) ?: emptySet<String>()
+        return pkgHistory.mapNotNull { pkg ->
+            val listOfApps = _uiState.value.listOfApps
+            val idx = listOfApps.indexOfFirst { it.pkg == pkg }
+            if (idx == -1)
+                null
+            else
+                listOfApps[idx]
+        }
+    }
+
+    fun addAppToHistory(ai: AppInfo) {
+        val editor = sp.edit()
+        val pkgHistory = getAppHistory().map { it.pkg }.toMutableList()
+        pkgHistory.add(ai.pkg)
+        editor.putStringSet(historySPKey, pkgHistory.toSet())
+        editor.apply()
+        updateHistoryItems()
+    }
+
+    fun onClickClear() {
+        sp.edit().putStringSet(historySPKey, emptySet<String>()).apply()
+        updateHistoryItems()
+    }
+
+    fun reloadLastSelectedItem() {
+        if (lastSelectedApp == null) return
+        val pkg = app.packageManager.getApplicationInfo(lastSelectedApp!!.pkg, 0)
+        val updatedAi = parseAppInfo(pkg)
+        val apps = _uiState.value.listOfApps
+        val idx = apps.indexOfFirst { it.pkg == updatedAi.pkg }
+        if (idx != -1 && updatedAi.labels != apps[idx].labels) {
+            apps[idx] = updatedAi
+            val newList = _uiState.value.listOfApps.sortedBy { it.name.lowercase() }
+                .sortedBy { !it.isModified() }.toMutableList()
+            _uiState.update {
+                it.copy(
+                    listOfApps = newList,
+                    snackBarDisplay = if (updatedAi.isModified()) SnackBarDisplay.MOVED_TO_TOP else SnackBarDisplay.MOVED_TO_BOTTOM
+                )
+            }
+            return
+        }
+    }
+
+    fun resetSnackBarDisplay() = _uiState.update { it.copy(snackBarDisplay = SnackBarDisplay.NONE) }
+
+    fun onClickApp(ai: AppInfo) {
+        lastSelectedApp = ai
+        addAppToHistory(ai)
+    }
 }

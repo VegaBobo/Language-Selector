@@ -9,22 +9,39 @@ enum class OperationMode {
     NONE, SHIZUKU, ROOT
 }
 
+enum class SnackBarDisplay {
+    NONE, MOVED_TO_TOP, MOVED_TO_BOTTOM
+}
+
 data class MainScreenState(
-    val searchTextFieldValue: String = "",
-    val isLoading: Boolean = true,
-    val isDropdownVisible: Boolean = false,
-    val isShowingSystemApps: Boolean = false,
+    val listOfApps: MutableList<AppInfo> = mutableStateListOf(),
+    val history: MutableList<AppInfo> = mutableStateListOf(),
     val operationMode: OperationMode = OperationMode.NONE,
-    val isSystemAppDialogVisible: Boolean = false,
+    val isDropdownVisible: Boolean = false,
     val isAboutDialogVisible: Boolean = false,
-    val listOfApps: MutableList<AppInfo> = mutableStateListOf()
+    val isLoading: Boolean = true,
+    val isShowSystemAppsHome: Boolean = false,
+    val snackBarDisplay: SnackBarDisplay = SnackBarDisplay.NONE,
+
+    /* Search bar */
+    val isExpanded: Boolean = false,
+    val searchTextFieldValue: String = "",
+    val selectLabels: MutableList<AppLabels> = mutableStateListOf()
 )
 
-data class AppInfo (
-    val appIcon: Drawable,
-    val appName: String,
-    val appPackageName: String,
-)
+enum class AppLabels {
+    SYSTEM_APP, MODIFIED
+}
+
+data class AppInfo(
+    val icon: Drawable,
+    val name: String,
+    val pkg: String,
+    val labels: List<AppLabels> = emptyList()
+) {
+    fun isSystemApp() = labels.contains(AppLabels.SYSTEM_APP)
+    fun isModified() = labels.contains(AppLabels.MODIFIED)
+}
 
 fun PackageManager.getLabel(applicationInfo: ApplicationInfo): String {
     return applicationInfo.loadLabel(this).toString()
